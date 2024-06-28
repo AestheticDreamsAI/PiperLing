@@ -139,7 +139,10 @@ public class AudioListener
 
     private async Task DownloadModel(string fileName, GgmlType ggmlType)
     {
-        Console.WriteLine($"Downloading Model {fileName}");
+            string modelsPath = modelFileName.Replace(Path.GetFileName(modelFileName), "");
+    Console.WriteLine($"Downloading Whisper Model {fileName}");
+        if (!Directory.Exists(modelsPath))
+            Directory.CreateDirectory(modelsPath);
         using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(ggmlType);
         using var fileWriter = File.OpenWrite(fileName);
         await modelStream.CopyToAsync(fileWriter);

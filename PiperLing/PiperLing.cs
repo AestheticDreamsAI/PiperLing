@@ -17,7 +17,7 @@ public class PiperLing
     static string apiExePath = AppDomain.CurrentDomain.BaseDirectory;
     static string modelPath = Path.Combine(apiExePath, $"model\\");
     static AudioListener audioListener;
-    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", string m="llama3")
+    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like for example: [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", string m="llama3")
     {
         system = sys;
         model = m;
@@ -31,10 +31,12 @@ public class PiperLing
         await Ollama("Initiating...");
         Console.Title = "PiperLing";
         Console.WriteLine("______ _                 _     _             \r\n| ___ (_)               | |   (_)            \r\n| |_/ /_ _ __   ___ _ __| |    _ _ __   __ _ \r\n|  __/| | '_ \\ / _ \\ '__| |   | | '_ \\ / _` |\r\n| |   | | |_) |  __/ |  | |___| | | | | (_| |\r\n\\_|   |_| .__/ \\___|_|  \\_____/_|_| |_|\\__, |\r\n        | |   By AestheticDreamsAI      __/ |\r\n        |_|                            |___/ ");
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Ready...");
-        Console.ForegroundColor = ConsoleColor.White;
         audioListener = new AudioListener();
+
+        Console.ForegroundColor = ConsoleColor.Green;
+
+        Console.WriteLine("--------------------READY----------------------\n");
+        Console.ForegroundColor = ConsoleColor.White;    
         audioListener.StartListening();
         //await ML.Run(mlContext,model,intents);
         while (true)
@@ -81,7 +83,7 @@ public class PiperLing
                     if (responseData == null) return "";
                     string messageContent = responseData.Message.Content;
                     if (messageContent.Contains("\n"))
-                        messageContent = messageContent.Split('\n')[0];
+                        messageContent = messageContent.Split('\n').Where(x=>x.StartsWith("[")).FirstOrDefault();
                     string processedResponse = messageContent.Trim();
                     return processedResponse;
                 }
@@ -99,6 +101,7 @@ public class PiperLing
     {
         Console.SetCursorPosition(0, Console.CursorTop - 1);
         audioListener.StopListening();
+        Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine($"Input: {text}");
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Thinking ...");
