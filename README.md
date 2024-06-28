@@ -1,4 +1,4 @@
-#PiperLing
+# PiperLing
 
 PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (LLama3), and C#. Designed to provide simple and fast real-time speech translation and synthesis. **Note: PiperLing is designed for Windows only.**
 
