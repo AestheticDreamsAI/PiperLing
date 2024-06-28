@@ -1,11 +1,4 @@
-______ _                 _     _             
-| ___ (_)               | |   (_)            
-| |_/ /_ _ __   ___ _ __| |    _ _ __   __ _ 
-|  __/| | '_ \ / _ \ '__| |   | | '_ \ / _` |
-| |   | | |_) |  __/ |  | |___| | | | | (_| |
-\_|   |_| .__/ \___|_|  \_____/_|_| |_|\__, |
-        | |   By AestheticDreamsAI      __/ |
-        |_|                            |___/ 
+#PiperLing
 
 PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (LLama3), and C#. Designed to provide simple and fast real-time speech translation and synthesis. **Note: PiperLing is designed for Windows only.**
 
