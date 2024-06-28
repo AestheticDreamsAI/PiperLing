@@ -85,6 +85,8 @@ public class PiperLing
                     string messageContent = responseData.Message.Content;
                     if (messageContent.Contains("\n"))
                         messageContent = messageContent.Split('\n').Where(x=>x.StartsWith("[")).FirstOrDefault();
+                    if (messageContent == null)
+                        return "";
                     string processedResponse = messageContent.Trim();
                     return processedResponse;
                 }
@@ -97,20 +99,41 @@ public class PiperLing
 
         return "";
     }
+    static string ReplaceUmlauts(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
 
+        StringBuilder sb = new StringBuilder(input);
+        sb.Replace("Ä", "Ae")
+          .Replace("Ö", "Oe")
+          .Replace("Ü", "Ue")
+          .Replace("ä", "ae")
+          .Replace("ö", "oe")
+          .Replace("ü", "ue")
+          .Replace("ß", "ss");
+
+        return sb.ToString();
+    }
     public static async Task Translate(string text)
     {
-        Console.SetCursorPosition(0, Console.CursorTop - 1);
-        audioListener.StopListening();
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine($"Input: {text}");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("Thinking ...");
-        var response = await Ollama(text);
-        var audio = await PiperHelper.Speak(response);
-        Console.SetCursorPosition(0, Console.CursorTop - 1);
-        Console.WriteLine(response);
-        AudioHelper.PlayAudio(audio);
+        try
+        {
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            audioListener.StopListening();
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"Input: {text}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Thinking ...");
+            var response = await Ollama(text);
+            var audio = await PiperHelper.Speak(ReplaceUmlauts(response));
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            Console.WriteLine(response);
+            AudioHelper.PlayAudio(audio);
+        }
+        catch { }
         Console.ForegroundColor= ConsoleColor.White;
         audioListener.StartListening();
     }
