@@ -5,6 +5,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        AIHelper.Init();
         while (true)
         {
             try

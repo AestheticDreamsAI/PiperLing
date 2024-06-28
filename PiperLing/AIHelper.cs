@@ -16,7 +16,12 @@ public class AIHelper
 For example:\n
 [de-de] Wie geht es dir?\n
 [en-gb] I'm fine, how about you?";
+    static string model = "";
 
+    public static void Init(string m="llama3")
+    {
+        model = m;
+    }
     public static async Task<string> Ollama(string prompt)
     {
         if (string.IsNullOrEmpty(prompt))
@@ -27,10 +32,10 @@ For example:\n
 
         var jsonData = JsonConvert.SerializeObject(new
         {
-            model = "llama3",
+            model = model,
 
             stream = false,
-            prompt = $"",
+            prompt = $"System: {system}",
             messages = new[]
             {
                     new { role = "system", content = $"{system}" },
@@ -57,6 +62,8 @@ For example:\n
                     var responseData = JsonConvert.DeserializeObject<ResponseData2>(responseContent);
                     if (responseData == null) return "";
                     string messageContent = responseData.Message.Content;
+                    if (messageContent.Contains("\n"))
+                        messageContent = messageContent.Split('\n')[0];
                     string processedResponse = messageContent.Trim();
                     return processedResponse;
                 }

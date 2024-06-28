@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiperLing", "AI Dollmetscher\PiperLing.csproj", "{B793C6F9-0FFD-4D51-8345-D1C57CEA6637}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiperLing", "PiperLing\PiperLing.csproj", "{B793C6F9-0FFD-4D51-8345-D1C57CEA6637}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

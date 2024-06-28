@@ -31,7 +31,7 @@ using System.Threading.Tasks;
         var lang = ExtractLanguage(text);
         string outputFilePath = System.IO.Path.GetTempPath() + $"\\{Guid.NewGuid().ToString()}.mp3";
 
-        string command = $"echo \"{text.Replace($"[{lang}]", "").Trim()}\" | \"{piperExePath}\" --model \"{modelPath}\\{lang}.onnx\" --output_file \"{outputFilePath}\"";
+        string command = $"echo \"{text.Replace($"[{lang}]", "").Trim()}\" | \"{piperExePath}\" --model \"{modelPath}{lang}.onnx\" --output_file \"{outputFilePath}\"";
 
         ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", "/c " + command)
         {
