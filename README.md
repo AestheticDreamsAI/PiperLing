@@ -34,37 +34,16 @@ To install PiperLing on Windows, follow these steps:
 
 ## Usage
 
-To use PiperLing, run the application and input the text you want to translate. The application will handle the translation in real-time. Here is a brief example of the `Program.cs` usage:
 
-```csharp
-using System;
-using System.Threading.Tasks;
+To use PiperLing, launch the application, select your recording device, and start speaking to translate your words. Don't forget to create or edit the config.json file.
 
-class Program
+```json
 {
-    static async Task Main(string[] args)
-    {
-        try
-        {
-            await PiperLing.Init();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error - {ex.Message}");
-            Console.ReadLine();
-        }
-    }
+  "systemPrompt": "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", 
+  "llmModel":"gpt-4o",
+  "OpenaiApiKey": "your-api-key-here"
 }
 ```
-
-## Project Structure
-
-- **AIHelper.cs:** Contains helper methods for AI-related tasks.
-- **AudioHelper.cs:** Provides functionalities for handling audio input and output.
-- **PiperHelper.cs:** Integrates Piper TTS functionalities.
-- **PiperLing.csproj:** Project file for the PiperLing application.
-- **Program.cs:** Main entry point of the application.
-
 ## Contributing
 
 We welcome contributions from the community! If you'd like to contribute to PiperLing, please follow these steps:
