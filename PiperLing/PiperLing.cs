@@ -30,6 +30,7 @@ public class PiperLing
     {
         await Ollama("Initiating...");
         Console.Title = "PiperLing";
+        Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine("______ _                 _     _             \r\n| ___ (_)               | |   (_)            \r\n| |_/ /_ _ __   ___ _ __| |    _ _ __   __ _ \r\n|  __/| | '_ \\ / _ \\ '__| |   | | '_ \\ / _` |\r\n| |   | | |_) |  __/ |  | |___| | | | | (_| |\r\n\\_|   |_| .__/ \\___|_|  \\_____/_|_| |_|\\__, |\r\n        | |   By AestheticDreamsAI      __/ |\r\n        |_|                            |___/ ");
         audioListener = new AudioListener();
 
