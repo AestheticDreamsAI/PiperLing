@@ -1,4 +1,4 @@
-# PiperLing
+![Piperling Logo](https://aestheticdreams.ai/images/piperling_logo.png)
 
 PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (example: LLama3) or GPT4o, and C#. Designed to provide simple and fast real-time speech translation and synthesis.
 
