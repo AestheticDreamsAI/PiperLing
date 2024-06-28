@@ -12,7 +12,7 @@ PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (e
 
 
 ## NOT TESTED ON LINUX OR MAC 
-Cherry-Lite is designed and optimized specifically for Windows. Compatibility with Linux and Mac systems has not been tested or verified.
+PiperLing is designed and optimized specifically for Windows. Compatibility with Linux and Mac systems has not been tested or verified.
 
 ## Installation
 
