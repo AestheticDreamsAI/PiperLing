@@ -51,7 +51,7 @@ To install PiperLing on Windows, follow these steps:
 - Start speaking
 
 
-## Usage
+## Configurationfile
 
 
 To use PiperLing, launch the application, select your recording device, and start speaking to translate your words. Don't forget to create or edit the config.json file. REMEMBER: The tags in the systemPrompt, such as [de-de] or [en-gb], are necessary for PiperTTS to recognize the language.
