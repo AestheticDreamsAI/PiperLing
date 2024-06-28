@@ -12,7 +12,48 @@ using System.Threading.Tasks;
     static string piperExePath = Path.Combine(apiExePath, "piper\\piper.exe");
     static string modelPath = Path.Combine(apiExePath, $"voices\\");
 
-    public static string ExtractLanguage(string input)
+    public static async Task Init()
+    {
+        if (!Directory.Exists(modelPath))
+        {
+            Directory.CreateDirectory(modelPath);
+        }
+
+        if (!File.Exists(piperExePath))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            throw new Exception($"PiperTTS is missing: {piperExePath}");
+        }
+        if (Directory.GetFiles(modelPath, "*.onnx").Length < 0)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            throw new Exception($"No piper voice models models detected: en-gb.onnx and en-gb.onnx.json\n{modelPath}");
+        }
+
+        await Start();
+    }
+
+    private static async Task Start()
+    {
+        Console.Title = "PiperLing";
+        Console.WriteLine(AI_Dollmetscher.Properties.Resources.logo);
+        Console.ForegroundColor= ConsoleColor.Green;
+        Console.WriteLine("Ready...");
+        Console.ForegroundColor=ConsoleColor.White;
+        while (true)
+        {
+            try
+            {
+                var text = Console.ReadLine();
+                await PiperLing.Translate(text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error - {ex.Message}");
+            }
+        }
+    }
+        public static string ExtractLanguage(string input)
     {
         string pattern = @"\[(?<lang>[a-z]{2}-[a-z]{2})\]";
         Match match = Regex.Match(input, pattern);
@@ -26,7 +67,7 @@ using System.Threading.Tasks;
             return "Unknown";
         }
     }
-    public static async Task<string> Piper(string text)
+    public static async Task<string> Speak(string text)
     {
         var lang = ExtractLanguage(text);
         string outputFilePath = System.IO.Path.GetTempPath() + $"\\{Guid.NewGuid().ToString()}.mp3";

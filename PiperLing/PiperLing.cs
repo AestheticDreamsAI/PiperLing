@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 using NAudio.Wave;
 
-public class AIHelper
+public class PiperLing
 {
-    static string system = @"You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English.However, my English isn't very good, so you need to translate their English sentences into German.\n\n
-For example:\n
-[de-de] Wie geht es dir?\n
-[en-gb] I'm fine, how about you?";
+    static string system = @"";
     static string model = "";
 
-    public static void Init(string m="llama3")
+    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English.However, my English isn't very good, so you need to translate their English sentences into German.\\n\\n\r\nFor example:\\n\r\n[de-de] Wie geht es dir?\\n\r\n[en-gb] I'm fine, how about you?", string m="llama3")
     {
+        system = sys;
         model = m;
+        await Ollama("Initiating...");
+        await PiperHelper.Init();
     }
     public static async Task<string> Ollama(string prompt)
     {
@@ -77,11 +77,10 @@ For example:\n
         return "";
     }
 
-    public static async Task DoJob(string text)
+    public static async Task Translate(string text)
     {
-
         var response = await Ollama(text);
-        var audio = await PiperHelper.Piper(response); 
+        var audio = await PiperHelper.Speak(response); 
         Console.WriteLine(response);
         AudioHelper.PlayAudio(audio);
     }
