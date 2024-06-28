@@ -35,8 +35,7 @@ To install PiperLing on Windows, follow these steps:
 ## Usage
 
 
-To use PiperLing, launch the application, select your recording device, and start speaking to translate your words. Don't forget to create or edit the config.json file.
-
+To use PiperLing, launch the application, select your recording device, and start speaking to translate your words. Don't forget to create or edit the config.json file. REMEMBER: The tags in the systemPrompt, such as [de-de] or [en-gb], are necessary for PiperTTS to recognize the language.
 ```json
 {
   "systemPrompt": "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", 
