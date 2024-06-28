@@ -74,7 +74,7 @@ For example:\n
     {
 
         var response = await Ollama(text);
-        var audio = await PiperHelper.Piper(response);
+        var audio = await PiperHelper.Piper(response); 
         Console.WriteLine(response);
         AudioHelper.PlayAudio(audio);
     }
