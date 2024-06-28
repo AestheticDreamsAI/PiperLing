@@ -51,28 +51,35 @@ using System.Threading.Tasks;
     {
         var lang = ExtractLanguage(text);
         string outputFilePath = System.IO.Path.GetTempPath() + $"\\{Guid.NewGuid().ToString()}.mp3";
-
-        string command = $"echo \"{text.Replace($"[{lang}]", "").Trim()}\" | \"{piperExePath}\" --model \"{modelPath}{lang}.onnx\" --output_file \"{outputFilePath}\"";
-
-        ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", "/c " + command)
+        if (File.Exists($"{modelPath}{lang}.onnx"))
         {
+            string command = $"echo \"{text.Replace($"[{lang}]", "").Trim()}\" | \"{piperExePath}\" --model \"{modelPath}{lang}.onnx\" --output_file \"{outputFilePath}\"";
 
-            RedirectStandardOutput = true,
-
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        using (Process process = Process.Start(processInfo))
-        {
-            using (StreamReader reader = process.StandardOutput)
+            ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", "/c " + command)
             {
-                string result = reader.ReadToEnd();
-                process.WaitForExit(); // Warte, bis der Prozess abgeschlossen ist
-                result = result.Replace("\r\n", "");
-                return outputFilePath;
+
+                RedirectStandardOutput = true,
+
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process process = Process.Start(processInfo))
+            {
+                using (StreamReader reader = process.StandardOutput)
+                {
+                    string result = reader.ReadToEnd();
+                    process.WaitForExit(); // Warte, bis der Prozess abgeschlossen ist
+                    result = result.Replace("\r\n", "");
+                    return outputFilePath;
+                }
             }
         }
+        else
+        {
+            Console.WriteLine($"{lang} not exists");
+        }
+            return "";
     }
 }
 

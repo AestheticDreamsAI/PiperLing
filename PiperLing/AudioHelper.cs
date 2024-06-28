@@ -10,7 +10,7 @@ using System.Threading.Tasks;
     {
         public static void PlayAudio(string url)
         {
-            if (string.IsNullOrEmpty(url)) return;
+            if (string.IsNullOrEmpty(url) || !File.Exists(url)) return;
             WaveOutEvent outputDevice = new WaveOutEvent();
             AudioFileReader audioFile = new AudioFileReader(url);
 
