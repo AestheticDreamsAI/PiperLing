@@ -19,8 +19,31 @@ public class PiperLing
     {
         system = sys;
         model = m;
-        await Ollama("Initiating...");
         await PiperHelper.Init();
+        await Start();
+
+    }
+
+    private static async Task Start()
+    {
+        await Ollama("Initiating...");
+        Console.Title = "PiperLing";
+        Console.WriteLine(AI_Dollmetscher.Properties.Resources.logo);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Ready...");
+        Console.ForegroundColor = ConsoleColor.White;
+        while (true)
+        {
+            try
+            {
+                var text = Console.ReadLine();
+                await Translate(text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error - {ex.Message}");
+            }
+        }
     }
     public static async Task<string> Ollama(string prompt)
     {

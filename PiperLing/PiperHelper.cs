@@ -30,29 +30,9 @@ using System.Threading.Tasks;
             throw new Exception($"No piper voice models models detected: en-gb.onnx and en-gb.onnx.json\n{modelPath}");
         }
 
-        await Start();
     }
 
-    private static async Task Start()
-    {
-        Console.Title = "PiperLing";
-        Console.WriteLine(AI_Dollmetscher.Properties.Resources.logo);
-        Console.ForegroundColor= ConsoleColor.Green;
-        Console.WriteLine("Ready...");
-        Console.ForegroundColor=ConsoleColor.White;
-        while (true)
-        {
-            try
-            {
-                var text = Console.ReadLine();
-                await PiperLing.Translate(text);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error - {ex.Message}");
-            }
-        }
-    }
+  
         public static string ExtractLanguage(string input)
     {
         string pattern = @"\[(?<lang>[a-z]{2}-[a-z]{2})\]";
