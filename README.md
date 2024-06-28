@@ -58,7 +58,7 @@ To use PiperLing, launch the application, select your recording device, and star
 ```json
 {
   "systemPrompt": "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", 
-  "llmModel":"gpt-4o or  Write LLama3 for example and local Ollama endpoint will be used ", 
+  "llmModel":"gpt-4o or Write any other llm like LLama3 for example and local Ollama endpoint will be used", 
   "OpenaiApiKey": "your-api-key-here"
 }
 ```
