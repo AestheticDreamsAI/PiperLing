@@ -15,7 +15,7 @@ public class PiperLing
     static string system = @"";
     static string model = "";
 
-    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English.However, my English isn't very good, so you need to translate their English sentences into German.\\n\\n\r\nFor example:\\n\r\n[de-de] Wie geht es dir?\\n\r\n[en-gb] I'm fine, how about you?", string m="llama3")
+    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", string m="llama3")
     {
         system = sys;
         model = m;
@@ -30,7 +30,7 @@ public class PiperLing
         Console.Title = "PiperLing";
         Console.WriteLine(AI_Dollmetscher.Properties.Resources.logo);
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Ready...");
+        Console.WriteLine("Ready...\n");
         Console.ForegroundColor = ConsoleColor.White;
         while (true)
         {
@@ -102,10 +102,15 @@ public class PiperLing
 
     public static async Task Translate(string text)
     {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Thinking ...");
         var response = await Ollama(text);
-        var audio = await PiperHelper.Speak(response); 
+        var audio = await PiperHelper.Speak(response);
+        Console.SetCursorPosition(0, Console.CursorTop - 1);
         Console.WriteLine(response);
         AudioHelper.PlayAudio(audio);
+        Console.ForegroundColor= ConsoleColor.White;
+        Console.WriteLine();
     }
 
 }
