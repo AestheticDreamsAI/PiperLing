@@ -57,6 +57,12 @@ We welcome contributions from the community! If you'd like to contribute to Pipe
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
+## Credits
+[rhasspy/piper](https://github.com/rhasspy/piper)
+[rollama/ollama](https://github.com/ollama/ollama)
+[sandrohanea/whisper.net](https://github.com/sandrohanea/whisper.net)
+[naudio/NAudio](https://github.com/naudio/NAudio)
+
 ## Contact
 
 For any questions or suggestions, feel free to open an issue or contact us at [contact@aestheticdreams.net](mailto:contact@aestheticdreams.net).
