@@ -6,6 +6,7 @@ using Cherry_Lite;
 using System.IO;
 using System.Threading.Tasks;
 using System;
+using AI_Dollmetscher;
 
 public class AudioListener
 {
@@ -27,17 +28,40 @@ public class AudioListener
 
     private void DeviceSelector()
     {
-
-        for (int n = -1; n < WaveInEvent.DeviceCount; n++)
+        Header.Add("recording device");
+        List<string> abc = new List<string>();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        
+        for (char c = 'a'; c <= 'z'; c++)
         {
-            var capabilities = WaveInEvent.GetCapabilities(n);
-            Console.WriteLine($"{n}: {capabilities.ProductName}");
+            abc.Add(c.ToString());
         }
 
-        // Benutzer nach der Auswahl des Geräts fragen
-        Console.Write("Bitte wähle ein Aufnahmegerät aus (Nummer eingeben): ");
-        
-        deviceId = int.Parse(Console.ReadLine());
+        for (int n = 0; n < WaveInEvent.DeviceCount; n++)
+        {
+            var capabilities = WaveInEvent.GetCapabilities(n);
+            Console.WriteLine($"{abc[n]}: {capabilities.ProductName.ToUpper()}");
+        }
+
+    Select:
+        Console.Write("\nSelect recording Device: ");
+        var input = Console.ReadLine();
+        deviceId = -1;
+
+        if (!string.IsNullOrEmpty(input))
+        {
+            deviceId = abc.IndexOf(input);
+        }
+
+        if (deviceId >= 0 && deviceId < WaveInEvent.DeviceCount)
+        {
+            Console.WriteLine("SELECTED: " + WaveInEvent.GetCapabilities(deviceId).ProductName.ToUpper());
+        }
+        else
+        {
+            Console.WriteLine("Invalid selection. Please try again.");
+            goto Select;
+        }
     }
 
     private void InitializeWaveInEvent()

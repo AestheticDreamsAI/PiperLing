@@ -9,34 +9,40 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using NAudio.Wave;
+using System.Net.Http.Json;
+using AI_Dollmetscher;
 
 public class PiperLing
 {
-    static string system = @"";
+    static string system = @"You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?""";
     static string model = "";
     static string apiExePath = AppDomain.CurrentDomain.BaseDirectory;
     static string modelPath = Path.Combine(apiExePath, $"model\\");
     static AudioListener audioListener;
-    public static async Task Init(string sys= "You are now taking on the role of a professional interpreter. Please translate everything we discuss, tagging the recognized language of the translation at the beginning with tags like for example: [de-de] for German or [en-gb] for English. Only output the translation. I am currently with friends and would like to communicate with them in English. However, my English isn't very good, so you need to translate their English sentences into German.\n\nFor example:\n[de-de] Wie geht es dir?\n[en-gb] I'm fine, how about you?", string m="llama3")
+    static Config config = new Config();
+    public static async Task Init(string m="llama3")
     {
-        system = sys;
+        Console.OutputEncoding = Encoding.UTF8;
+        if (File.Exists("./config.json"))
+            config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json"));
         model = m;
         await PiperHelper.Init();
         await Start();
 
     }
 
+ 
     private static async Task Start()
     {
-        await Ollama("Initiating...");
+        if(!model.StartsWith("gpt-"))
+            await Ollama("Are you ready?");
+
         Console.Title = "PiperLing";
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine("______ _                 _     _             \r\n| ___ (_)               | |   (_)            \r\n| |_/ /_ _ __   ___ _ __| |    _ _ __   __ _ \r\n|  __/| | '_ \\ / _ \\ '__| |   | | '_ \\ / _` |\r\n| |   | | |_) |  __/ |  | |___| | | | | (_| |\r\n\\_|   |_| .__/ \\___|_|  \\_____/_|_| |_|\\__, |\r\n        | |   By AestheticDreamsAI      __/ |\r\n        |_|                            |___/ ");
+
         audioListener = new AudioListener();
-
-        Console.ForegroundColor = ConsoleColor.Green;
-
-        Console.WriteLine("--------------------READY----------------------\n");
+        Header.Add("ready");
+     
+        Console.WriteLine($"LLM: {model.ToUpper()} ");
         Console.ForegroundColor = ConsoleColor.White;    
         audioListener.StartListening();
         //await ML.Run(mlContext,model,intents);
@@ -127,7 +133,10 @@ public class PiperLing
             Console.WriteLine($"Input: {text}");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Thinking ...");
-            var response = await Ollama(text);
+            var response = "";
+            if(model.Contains("gpt-"))
+             response = await GPT4o(text);
+            else response = await Ollama(text);
             var audio = await PiperHelper.Speak(ReplaceUmlauts(response));
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             Console.WriteLine(response);
@@ -138,9 +147,69 @@ public class PiperLing
         audioListener.StartListening();
     }
 
+    static async Task<string> GPT4o(string prompt)
+    {
+        if (string.IsNullOrEmpty(prompt) || string.IsNullOrEmpty(config.OpenaiApiKey))
+            return string.Empty;
+
+        var openaiUrl = "https://api.openai.com/v1/chat/completions";
+
+        var jsonData = JsonConvert.SerializeObject(new
+        {
+            model = model,
+            messages = new[]
+            {
+            new { role = "system", content = system },
+            new { role = "user", content = $"Translate the following: '{prompt}'." }
+        },
+            max_tokens = 100
+        });
+
+        using (var httpClient = new HttpClient())
+        {
+            httpClient.Timeout = TimeSpan.FromMinutes(10);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {config.OpenaiApiKey}");
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            try
+            {
+                HttpResponseMessage response = await httpClient.PostAsync(openaiUrl, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    var responseData = JsonConvert.DeserializeObject<ResponseData>(responseContent);
+                    if (responseData == null) return "";
+                    string messageContent = responseData.choices[0].message.Content;
+                    return messageContent.Trim();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        return "";
+    }
 }
 
-    public class MessageDetails
+
+public class Config
+{
+    public string OpenaiApiKey { get; set; }
+}
+
+public class Choice
+{
+    public MessageDetails message { get; set; }
+}
+
+public class ResponseData
+{
+    public List<Choice> choices { get; set; }
+}
+
+public class MessageDetails
     {
         public string Role { get; set; }
         public string Content { get; set; }

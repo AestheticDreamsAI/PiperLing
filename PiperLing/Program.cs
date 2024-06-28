@@ -8,7 +8,7 @@ class Program
     {
         try
         {
-            await PiperLing.Init();
+            await PiperLing.Init("llama3");
         }
         catch (Exception ex)
         {
