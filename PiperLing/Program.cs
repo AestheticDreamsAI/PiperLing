@@ -8,6 +8,7 @@ class Program
     {
         try
         {
+            Task.Run(async () => ApiEndpoint.Run());
             await PiperLing.Init();
         }
         catch (Exception ex)

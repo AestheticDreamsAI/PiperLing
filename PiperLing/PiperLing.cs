@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using NAudio.Wave;
 using AI_Dollmetscher;
 
+using System.Threading.Tasks;
+using System.IO;
+
+
 public class PiperLing
 {
     static string system = "";
@@ -19,6 +23,17 @@ public class PiperLing
     static Config config = new Config();
     static HttpClient httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
 
+    public static async Task<string> ProcessAudioFile(string filePath, string language)
+    {
+        // Implementiere hier die Logik zur Verarbeitung der Audio-Datei
+        // und Rückgabe der Übersetzung
+        // Beispiel: 
+        // return "Translated text from the audio file";
+
+        // Deine Logik hier
+        await Task.Delay(1000); // Simuliere eine asynchrone Verarbeitung
+        return "Translated text from the audio file";
+    }
     public static async Task Init()
     {
         Console.OutputEncoding = Encoding.UTF8;
@@ -82,12 +97,14 @@ public class PiperLing
 
         try
         {
-            HttpResponseMessage response = await httpClient.PostAsync($"{url}/api/chat", content);
+            HttpResponseMessage response = await httpClient.PostAsync($"{url}/v1/completion", content);
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
                 var responseData = JsonConvert.DeserializeObject<ResponseData2>(responseContent);
                 if (responseData == null) return "";
+
+                if (string.IsNullOrEmpty(responseData.Message.Content)) return "";
                 string messageContent = responseData.Message.Content;
                 if (messageContent.Contains("\n"))
                     messageContent = messageContent.Split('\n').FirstOrDefault(x => x.StartsWith("["));
