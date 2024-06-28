@@ -79,7 +79,7 @@ public class PiperLing
         {
             httpClient.Timeout = TimeSpan.FromMinutes(10);
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
+             
             try
             {
                 HttpResponseMessage response = await httpClient.PostAsync($"{url}/api/chat", content);
