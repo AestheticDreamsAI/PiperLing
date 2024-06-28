@@ -14,7 +14,7 @@ PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (e
 ## NOT TESTED ON LINUX OR MAC 
 PiperLing is designed and optimized specifically for Windows. Compatibility with Linux and Mac systems has not been tested or verified.
 
-## Installation
+## Build on Windows
 
 To install PiperLing on Windows, follow these steps:
 
@@ -36,6 +36,20 @@ To install PiperLing on Windows, follow these steps:
    ```bash
    dotnet run
    ```
+
+## Installation on Windows
+
+1. Download and extract:
+ - PiperLing_v0.0.1.zip (Windows release)
+
+2. Edit Config.json to your needs
+
+3. Run Application.
+- PiperLing.exe
+
+4. Select recording device 
+- Start speaking
+
 
 ## Usage
 
