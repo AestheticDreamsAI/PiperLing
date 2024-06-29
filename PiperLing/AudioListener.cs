@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using AI_Dollmetscher;
+using NAudio.Wave.SampleProviders;
 
 public class AudioListener
 {
@@ -15,15 +16,20 @@ public class AudioListener
     private WaveInEvent waveIn;
     private const int sampleRate = 16000; // Whisper model's expected sample rate
     private GgmlType ggmlType = GgmlType.Base;
-    private string modelFileName = ".\\model\\ggml-base.bin";
-    private WhisperProcessor processor;
+    public string modelFileName = ".\\model\\ggml-base.bin";
+    public WhisperProcessor processor;
     private bool isProcessing = false; // Prevent overlapping processing
     private int recordDelay = 10;
     private int deviceId = 0;
-    public AudioListener()
+
+   
+    public AudioListener(bool endpoint = false)
     {
-        DeviceSelector();
-        InitializeWhisper().Wait();
+        if (!endpoint)
+        {
+            DeviceSelector();
+            InitializeWhisper().Wait();
+        }
     }
 
     private void DeviceSelector()

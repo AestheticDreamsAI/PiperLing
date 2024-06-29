@@ -11,6 +11,11 @@ using AI_Dollmetscher;
 
 using System.Threading.Tasks;
 using System.IO;
+using NAudio.Wave.SampleProviders;
+using System.Diagnostics;
+using Whisper.net;
+using Cherry_Lite;
+using static System.Net.Mime.MediaTypeNames;
 
 
 public class PiperLing
@@ -22,17 +27,44 @@ public class PiperLing
     static AudioListener audioListener;
     static Config config = new Config();
     static HttpClient httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
-
     public static async Task<string> ProcessAudioFile(string filePath, string language)
     {
-        // Implementiere hier die Logik zur Verarbeitung der Audio-Datei
-        // und Rückgabe der Übersetzung
-        // Beispiel: 
-        // return "Translated text from the audio file";
+        var output = "";
+        try
+        {
+            if (audioListener == null)
+                audioListener = new AudioListener(true);
+            using var whisperFactory = WhisperFactory.FromPath(audioListener.modelFileName);
 
-        // Deine Logik hier
-        await Task.Delay(1000); // Simuliere eine asynchrone Verarbeitung
-        return "Translated text from the audio file";
+            audioListener.processor = whisperFactory.CreateBuilder()
+                .WithLanguage("auto")
+                .Build();
+
+
+
+            using var fileStream = File.OpenRead($".\\{filePath}");
+            using var wavStream = new MemoryStream();
+
+            using var reader = new WaveFileReader(fileStream);
+            var resampler = new WdlResamplingSampleProvider(reader.ToSampleProvider(), 16000);
+            WaveFileWriter.WriteWavFileToStream(wavStream, resampler.ToWaveProvider16());
+
+            wavStream.Seek(0, SeekOrigin.Begin);
+
+            await foreach (var result in audioListener.processor.ProcessAsync(wavStream))
+            {
+                output += $"{result.Text} ";
+            }
+        }
+        catch (Exception ex){ Console.WriteLine(ex.Message); }
+        if(!string.IsNullOrEmpty(output))
+        {
+            output = OutputCleaner.CleanString(output);
+            output = model.Contains("gpt-")
+    ? await SendRequestToGPT4o(output)
+    : await SendRequestToOllama(output);
+        }
+        return output;
     }
     public static async Task Init()
     {
@@ -47,9 +79,9 @@ public class PiperLing
         {
             throw new Exception("Config file is missing ...");
         }
-
-        await PiperHelper.Init();
-        await Start();
+                await PiperHelper.Init();
+                await Start();
+         
     }
 
     private static async Task Start()
