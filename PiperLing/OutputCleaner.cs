@@ -43,8 +43,7 @@ namespace Cherry_Lite
             {
                 return s;
             }
-
-            return Regex.Replace(s, generalPattern, "").Trim();
+            return Regex.Replace(s, generalPattern, "").Replace("*","").Trim();
         }
 
     }

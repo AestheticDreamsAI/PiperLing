@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System;
 using AI_Dollmetscher;
 using NAudio.Wave.SampleProviders;
+using System.Reflection;
+using Newtonsoft.Json;
 
 public class AudioListener
 {
@@ -31,6 +33,131 @@ public class AudioListener
             InitializeWhisper().Wait();
         }
     }
+
+
+    public async Task<string> ProcessEndpointAudio(string filePath)
+    {
+        if(!File.Exists(filePath))
+        {
+            var jsonResult = new
+            {
+                Language = "",
+                Response = "Error",
+                Audio = ""
+            };
+
+            return JsonConvert.SerializeObject(jsonResult);
+        }
+        var output = "";
+        var tempFilePath = Path.GetTempFileName();
+        var temp2 = $"./uploads/{Guid.NewGuid().ToString()}_temp.wav";
+
+        try
+        {
+            using var whisperFactory = WhisperFactory.FromPath(modelFileName);
+            var processor = whisperFactory.CreateBuilder()
+                .WithLanguage("auto")
+                .Build();
+
+            // Lesen der Original-WAV-Datei und Anwenden der Rauschunterdrückung
+            using (var fileStream = File.OpenRead(filePath))
+            using (var reader = new WaveFileReader(fileStream))
+            {
+                var sampleProvider = reader.ToSampleProvider();
+                float threshold = 0.01f; // Threshold für das Noise Gate
+                float releaseTime = 0.1f; // Release-Zeit für das Noise Gate
+                float[] buffer = new float[reader.WaveFormat.SampleRate * 2]; // Größerer Puffer
+                int samplesRead;
+                float lastAmplitude = 0f;
+
+                using (var writer = new WaveFileWriter(tempFilePath, reader.WaveFormat))
+                {
+                    while ((samplesRead = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        for (int i = 0; i < samplesRead; i++)
+                        {
+                            // Noise Gate
+                            if (Math.Abs(buffer[i]) < threshold)
+                            {
+                                buffer[i] = 0; // Rauschen unterdrücken
+                            }
+                            else
+                            {
+                                buffer[i] = (float)(buffer[i] * Math.Exp(-releaseTime)); // Release-Zeit anwenden
+                            }
+                        }
+
+                        // Low-Pass-Filter
+                        for (int i = 1; i < samplesRead; i++)
+                        {
+                            buffer[i] = 0.5f * (buffer[i] + buffer[i - 1]);
+                        }
+
+                        writer.WriteSamples(buffer, 0, samplesRead);
+                    }
+                }
+            }
+
+            File.Copy(tempFilePath, temp2);
+            using var tempStream = File.OpenRead(temp2);
+            using var resampledStream = new MemoryStream();
+            using (var resampledReader = new WaveFileReader(tempStream))
+            {
+                var resampler = new WdlResamplingSampleProvider(resampledReader.ToSampleProvider(), 16000);
+                WaveFileWriter.WriteWavFileToStream(resampledStream, resampler.ToWaveProvider16());
+            }
+
+            resampledStream.Seek(0, SeekOrigin.Begin);
+
+            // Verarbeitung des resampled Streams
+            await foreach (var result in processor.ProcessAsync(resampledStream))
+            {
+                output += $"{result.Text} ";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            if (File.Exists(tempFilePath))
+            {
+                File.Delete(tempFilePath);
+            }
+
+            if (File.Exists(temp2))
+            {
+                File.Delete(temp2);
+            }
+        }
+            output = output.Replace(".","").Trim();
+        if (!string.IsNullOrEmpty(output))
+        {
+            output = OutputCleaner.CleanString(output);
+            var result = await PiperLing.TranslateEndpoint(output);
+            string response = result.Item1;
+            string audio = result.Item2;
+
+            if (!string.IsNullOrEmpty(response) && !string.IsNullOrEmpty(audio))
+            {
+                var langCode = PiperHelper.ExtractLanguage(response);
+                var jsonResult = new
+                {
+                    Language = PiperHelper.GetLanguageName(langCode),
+                    Response = response.Replace($"[{langCode}] ", "").Trim(),
+                    Audio = audio
+                };
+
+                output = JsonConvert.SerializeObject(jsonResult);
+            }
+        }
+        return output;
+    }
+
+
+
+
 
     private void DeviceSelector()
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AI_Dollmetscher;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -6,12 +7,13 @@ using System.Threading.Tasks;
 
 internal class ApiEndpoint
 {
+    static bool HeaderAdded = false;
     public static async Task Run()
     {
         HttpListener listener = new HttpListener();
-        listener.Prefixes.Add("http://localhost:5000/");
+        listener.Prefixes.Add("http://*:5000/");
         listener.Start();
-        Console.WriteLine("Listening for connections on http://localhost:5000/");
+        Console.WriteLine("Listening for connections on http://0.0.0.0:5000/");
 
         while (true)
         {
@@ -38,6 +40,12 @@ internal class ApiEndpoint
         {
             try
             {
+                if(!HeaderAdded)
+                {
+                    HeaderAdded= true;
+                    Header.Add("web app");
+                    Console.WriteLine();
+                }
                 var filePath = Path.Combine("uploads", Guid.NewGuid().ToString() + ".wav");
 
                 if (!Directory.Exists("uploads"))
@@ -52,8 +60,9 @@ internal class ApiEndpoint
 
                 string translation = await PiperLing.ProcessAudioFile(filePath, "auto");
 
-                var responseString = $"{{\"translation\": \"{translation}\"}}";
-                var buffer = Encoding.UTF8.GetBytes(responseString);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+                var buffer = Encoding.UTF8.GetBytes(translation);
 
                 response.ContentLength64 = buffer.Length;
                 response.ContentType = "application/json";

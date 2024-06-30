@@ -30,40 +30,9 @@ public class PiperLing
     public static async Task<string> ProcessAudioFile(string filePath, string language)
     {
         var output = "";
-        try
-        {
             if (audioListener == null)
                 audioListener = new AudioListener(true);
-            using var whisperFactory = WhisperFactory.FromPath(audioListener.modelFileName);
-
-            audioListener.processor = whisperFactory.CreateBuilder()
-                .WithLanguage("auto")
-                .Build();
-
-
-
-            using var fileStream = File.OpenRead($".\\{filePath}");
-            using var wavStream = new MemoryStream();
-
-            using var reader = new WaveFileReader(fileStream);
-            var resampler = new WdlResamplingSampleProvider(reader.ToSampleProvider(), 16000);
-            WaveFileWriter.WriteWavFileToStream(wavStream, resampler.ToWaveProvider16());
-
-            wavStream.Seek(0, SeekOrigin.Begin);
-
-            await foreach (var result in audioListener.processor.ProcessAsync(wavStream))
-            {
-                output += $"{result.Text} ";
-            }
-        }
-        catch (Exception ex){ Console.WriteLine(ex.Message); }
-        if(!string.IsNullOrEmpty(output))
-        {
-            output = OutputCleaner.CleanString(output);
-            output = model.Contains("gpt-")
-    ? await SendRequestToGPT4o(output)
-    : await SendRequestToOllama(output);
-        }
+            output = await audioListener.ProcessEndpointAudio(filePath);
         return output;
     }
     public static async Task Init()
@@ -129,7 +98,7 @@ public class PiperLing
 
         try
         {
-            HttpResponseMessage response = await httpClient.PostAsync($"{url}/v1/completion", content);
+            HttpResponseMessage response = await httpClient.PostAsync($"{url}/api/chat", content);
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -194,6 +163,38 @@ public class PiperLing
         }
         Console.ForegroundColor = ConsoleColor.White;
         audioListener.StartListening();
+    }
+
+    public static async Task<(string,string)> TranslateEndpoint(string text)
+    {
+        try
+        {
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"Input: {text}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Thinking ...");
+
+            var response = model.Contains("gpt-")
+                ? await SendRequestToGPT4o(text)
+                : await SendRequestToOllama(text);
+
+            var audio = await PiperHelper.Speak(ReplaceUmlauts(response));
+            byte[] audioBytes = File.ReadAllBytes(audio);
+
+            // Convert byte array to Base64 string
+            string base64String = Convert.ToBase64String(audioBytes);
+
+            // Format as a Data URI
+            string dataUri = $"data:audio/wav;base64,{base64String}";
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            Console.WriteLine(response);
+            return (response,dataUri);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        return (null,null);
     }
 
     static async Task<string> SendRequestToGPT4o(string prompt)

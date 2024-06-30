@@ -32,6 +32,36 @@ using System.Threading.Tasks;
 
     }
 
+    public static string GetLanguageName(string lang)
+    {
+        var languageDict = new Dictionary<string, string>
+        {
+            { "de-de", "German" },
+            { "en-us", "English" },
+            { "en-gb", "English" },
+            { "fr-fr", "French" },
+            { "es-es", "Spanish" },
+            { "it-it", "Italian" },
+            { "ja-jp", "Japanese" },
+            { "zh-cn", "Chinese" },
+            { "ru-ru", "Russian" },
+            { "ko-kr", "Korean" },
+            { "pt-pt", "Portuguese" },
+            { "nl-nl", "Dutch" },
+            { "sv-se", "Swedish" },
+            { "fi-fi", "Finnish" },
+            { "da-dk", "Danish" },
+            { "nb-no", "Norwegian" },
+            { "tr-tr", "Turkish" },
+            { "pl-pl", "Polish" },
+            { "cs-cz", "Czech" },
+            { "ar-sa", "Arabic" },
+            { "he-il", "Hebrew" },
+            { "hi-in", "Hindi" }
+        };
+
+        return string.IsNullOrEmpty(languageDict[lang]) == null ? "Unknown" : languageDict[lang];
+    }
   
         public static string ExtractLanguage(string input)
     {
