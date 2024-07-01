@@ -2,16 +2,15 @@
 
 PiperLing is a powerful open-source interpreter AI based on Piper TTS, Ollama (example: LLama3) or GPT4o, and C#. Designed to provide simple and fast real-time speech translation and synthesis.
 
-## WebApp is now available
-[AestheticDreamsAI/PiperLingWebApp](https://github.com/AestheticDreamsAI/PiperLingWebApp)
-
 ## Features
 
 - **Real-time Translation:** Fast and accurate translations in multiple languages.
 - **Text-to-Speech:** Natural and clear speech synthesis for various use cases.
 - **Extensible and Customizable:** Open-source code that can be easily extended and customized.
 - **Cutting-edge Technology:** Utilizes advanced models like Piper TTS and Ollama (LLama3).
-- **Web UI or Web App compatibility** for using PiperLing on smartphones or web browsers. 
+- **Web UI or Web App compatibility** for using PiperLing on smartphones or web browsers.
+## WebApp is now available
+[AestheticDreamsAI/PiperLingWebApp](https://github.com/AestheticDreamsAI/PiperLingWebApp)
 
 ## NOT TESTED ON LINUX OR MAC 
 PiperLing is designed and optimized specifically for Windows. Compatibility with Linux and Mac systems has not been tested or verified.
