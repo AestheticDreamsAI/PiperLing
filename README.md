@@ -11,9 +11,7 @@ PiperLing is designed and optimized specifically for Windows. Compatibility with
 - **Text-to-Speech:** Natural and clear speech synthesis for various use cases.
 - **Extensible and Customizable:** Open-source code that can be easily extended and customized.
 - **Cutting-edge Technology:** Utilizes advanced models like Piper TTS and Ollama (LLama3).
-- **Web UI or Web App compatibility** for using PiperLing on smartphones or web browsers.
-## WebApp is now available
-[AestheticDreamsAI/PiperLingWebApp](https://github.com/AestheticDreamsAI/PiperLingWebApp)
+- **Web UI or Web App compatibility** for using PiperLing via [Web App](https://github.com/AestheticDreamsAI/PiperLingWebApp) on smartphones or web browsers.
 
 ## Build on Windows
 
